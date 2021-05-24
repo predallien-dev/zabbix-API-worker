@@ -2,7 +2,7 @@
 
 from pyzabbix.api import ZabbixAPI
 
-zapi = ZabbixAPI(url='https://monitoring.avilex.ru/zabbix', user='m.gerbersgagen', password='Masterimargarit5*')
+zapi = ZabbixAPI(url='URL', user='m.gerbersgagen', password='password*')
 res = zapi.do_request(method="host.create", params= {
                           "host": "testapi",
                           "interfaces": [
