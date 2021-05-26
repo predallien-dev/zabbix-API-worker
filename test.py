@@ -1,6 +1,6 @@
 from pyzabbix.api import ZabbixAPI
 
-z = ZabbixAPI(url='https://monitoring.avilex.ru/zabbix', user='m.gerbersgagen', password='Masterimargarit5*')
+z = ZabbixAPI(url='https://monitoring.avilex.ru/zabbix', user='m.gerbersgagen', password='*')
 z.do_request(method="host.create",params= {
         "host": "blablalbalba",
         "interfaces": [
