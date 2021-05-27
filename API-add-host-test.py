@@ -1,22 +1,24 @@
-# Это тест интеграцтии с гитхабом, не нужно его исполнять
-
 from pyzabbix.api import ZabbixAPI
 
-zapi = ZabbixAPI(url='URL', user='m.gerbersgagen', password='password*')
-res = zapi.do_request(method="host.create", params= {
-                          "host": "testapi",
+host_name = input('Enter hostname: ')
+ip_addr = input('Enter IP address of new host: ' )
+
+with  ZabbixAPI(url='https://monitoring.avilex.ru/zabbix/', user='m.gerbersgagen', password='Masterimargarit5*') as zapi:
+    res = zapi.do_request(method="host.create", params= {
+                          "host": host_name,
                           "interfaces": [
                               {
                                   "type": '1',
                                   "main": '1',
                                   "useip": '1',
-                                  "ip": '192.168.10.252',
+                                  "ip": ip_addr,
                                   "dns": '',
                                   "port": '10050'}],
                           "groups": [
-                              {"groupid": "50"}
+                              {"groupid": "214"}
                           ],
                       }
                       )
-print(res)
-zapi.user.logout()
+if res:
+    print('Success')
+
