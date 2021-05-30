@@ -9,7 +9,7 @@ host_group_id = input('Enter group id: ')
 template_id = input('Enter template id: ')
 
 # обращаю внимание на user и password
-with ZabbixAPI(url=url, user='m.gerbersgagen', password='') as zapi:
+with ZabbixAPI(url=url, user='m.gerbersgagen', password='Masterimargarit5*') as zapi:
 
     all_hosts_ids = zapi.host.get(output='host', groupids=host_group_id)
     zapi.do_request('template.massadd',
@@ -22,4 +22,3 @@ with ZabbixAPI(url=url, user='m.gerbersgagen', password='') as zapi:
                     'hosts': all_hosts_ids,
                 }
                     )
-
