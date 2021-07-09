@@ -1,25 +1,19 @@
 from pyzabbix import ZabbixAPI
-
-
-target_url = 'https://monitoring.dv.local/'
-target_user='m.gerbersgagen'
-target_password='KmPO6sssqVDk'
-
-source_url = 'http://10.87.188.76/zabbix'
-source_user = 'm.gerbersgagen'
-source_password = 'KL29JPMe'
-
+# Добавляем список с кредами для мониторинга
 ocod_new = ['https://monitoring.dv.local/', 'm.gerbersgagen', 'KmPO6sssqVDk']
 ocod_old = ['http://10.87.188.76/zabbix','m.gerbersgagen', 'KL29JPMe']
 
 
-class ZabbixWorker():
+class ZabbixWorker(host):
     """Класс, реализующий ряд функций для удобной работы с Zabbix API"""
     # Функция принимает на вход номер группы и возвращает id всех хостов в этой группе
 
-    def host_copy(groupid):
+    def host_copy(host_creds, groupid):
+        url = host_creds[0]
+        user = host_creds[1]
+        password = hostcreds[2]
         for hostname in host_list:
-            with ZabbixAPI(url=source_url, user=source_user, password=source_password) as zapi:
+            with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=hostcreds[2]) as zapi:
                 original_host = zapi.host.get(
                     filter={'host': hostname},
                     selectGroups='extend',
@@ -33,7 +27,7 @@ class ZabbixWorker():
                     name=original_host['name'] + ' (history)'
                 )
 
-                with ZabbixAPI(url=target_url, user=target_user, password=target_password) as zapi:
+                with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=hostcreds[2]) as zapi:
                     clone = zapi.host.create(
                         host=original_host['host'],
                         name=original_host['name'],
@@ -50,10 +44,10 @@ class ZabbixWorker():
 # получать сперва id необходимо по причине того, что хостнеймы в группе заббикс
 # просто так не отдает, только по id хоста
 
-def get_hosts_names(self, groupid):
+def get_hosts_names(groupid):
 
         def get_hosts_ids(groupid):
-            with ZabbixAPI(url=target_url, user=user, password=password) as zapi:
+            with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=hostcreds[2]) as zapi:
                 # get hostnames and ID's of hosts
                 host_ids_and_names = zapi.host.get(groupids=groupid, output=['host'])
                 host_list = []
@@ -64,7 +58,7 @@ def get_hosts_names(self, groupid):
                     host_list.append(host_ids)
                 return host_list
 
-        with ZabbixAPI(url=target_url, user=user, password=password) as zapi:
+        with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=hostcreds[2]) as zapi:
             # get hostnames and ID's of hosts
             host_ids_and_names = zapi.host.get(hostids=get_hosts_ids(groupid=groupid), output=['host'])
             host_list = []
