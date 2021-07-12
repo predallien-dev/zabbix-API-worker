@@ -40,12 +40,6 @@ class ZabbixWorker:
                     selectInterfaces='extend',
                     selectMacros='extend'
                 )[0]
-                disable = zapi.host.update(
-                    hostid=original_host['hostid'],
-                    status=1,
-                    host=original_host['host'] + '-history',
-                    name=original_host['name'] + ' (history)'
-                )
 
                 with ZabbixAPI(url=target_host_creds[0], user=target_host_creds[1],
                                password=target_host_creds[2]) as zapi:
