@@ -22,7 +22,7 @@ class ZabbixWorker:
                 host_list.append(host_ids)
             return host_list
 
-    def get_hosts_names(host_creds, groupid):
+    def get_hosts_names(self, host_creds, groupid):
         ZabbixWorker.get_hosts_ids(host_creds, groupid)
         with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
             host_ids_and_names = zapi.host.get(hostids=ZabbixWorker.get_hosts_ids(host_creds, groupid), output=['host'])
@@ -31,7 +31,7 @@ class ZabbixWorker:
                 host_list.append(host_ids_and_names[i].get('host'))
             return host_list
 
-    def host_copy(sourse_host_creds, target_host_creds, host_list, target_groupid):
+    def host_copy(self, sourse_host_creds, target_host_creds, host_list, target_groupid):
         for hostname in host_list:
             with ZabbixAPI(url=sourse_host_creds[0], user=sourse_host_creds[1], password=sourse_host_creds[2]) as zapi:
                 original_host = zapi.host.get(
@@ -53,3 +53,28 @@ class ZabbixWorker:
                             {'main': '1', 'type': '1', 'useip': '1', 'dns': '', 'port': '10050', 'bulk': '1',
                              'ip': original_host['interfaces'][0]['ip']}])
                     print('Copying host ' + hostname)
+    #  добавляем хосты на указанный сервер, читая два файла,
+    #  в одном hostnames, в другом ip
+
+    def add_host(self, host_creds, groupid):
+        hostnames = []
+        iplist = []
+        with open('hostnames', 'r') as file:
+            for line in file.readlines():
+                hostnames.append(line.rstrip())
+        with open ("iplist", 'r') as file:
+            for line in file.readlines():
+                iplist.append(line.rstrip())
+        for i in range(len(hostnames)):
+            with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+                host_create = zapi.host.create(
+                    host=hostnames[i],
+                    groups=[{'groupid': groupid}],
+                    interfaces=[
+                        {'main':'1', 'type': '1', 'useip': '1', 'dns': '',
+                         'port': '10050', 'bulk': '1',
+                         'ip': iplist[i]}
+                    ]
+                )
+
+
