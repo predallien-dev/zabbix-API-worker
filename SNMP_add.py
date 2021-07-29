@@ -1,3 +1,5 @@
+# скрипт нуждается в дичайшей переделке, учитывая что теперь есть класс ZabbixWoker
+
 from pyzabbix import ZabbixAPI
 
 target_url = 'https://monitoring.dv.local/'
