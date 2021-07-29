@@ -6,6 +6,8 @@ ocod_old = ['http://10.87.188.76/zabbix', 'm.gerbersgagen', 'KL29JPMe']
 
 
 class ZabbixWorker:
+    def __init__(self):
+        pass
     """Класс, реализующий ряд функций для удобной работы с Zabbix API"""
 
     # Получаем все имена хостов в группе, номер которой передаем функции на вход.
@@ -57,8 +59,13 @@ class ZabbixWorker:
     #  в одном hostnames, в другом ip
 
     def add_host(self, host_creds, groupid):
+
         hostnames = []
         iplist = []
+
+        # итерируемся по двум листам, потом используем 1 строчки в качестве хостнейма
+        # вторую строчку в качестве ip
+        # скрипт работает только если используется IP, с DNS не работает
         with open('hostnames', 'r') as file:
             for line in file.readlines():
                 hostnames.append(line.rstrip())
@@ -76,5 +83,12 @@ class ZabbixWorker:
                          'ip': iplist[i]}
                     ]
                 )
+    # считает количество хостов в группе, только и всего.
 
+    def host_count(self, host_creds, groupid):
+        with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+            host_count = zapi.host.get(groupids=groupid, output=['host']
+            )
+        res = len([element for element in host_count if isinstance(element, dict)])
+        return int(res)
 
