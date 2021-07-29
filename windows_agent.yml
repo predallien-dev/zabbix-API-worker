@@ -1,3 +1,6 @@
+# файл с агентом.exe и темплейт j2 должны лежать в папке с плейбуком в папке files
+
+
 - name: Reinstall Zabbix Agent on Windows hosts
 
   hosts: citrix-defect
