@@ -49,12 +49,12 @@
 
     - name: Copy executable file to target hosts
       ansible.windows.win_copy:
-        src: /ansible/ansiblewin/zabbix_agentd.exe
+        src: files/zabbix_agentd.exe
         dest: C:\zabbix\zabbix_agentd.exe
 
     - name: Copy agent.conf to target hosts
       template:
-        src: /ansible/ansiblewin/zabbix_agentd.j2
+        src: files/zabbix_agentd.j2
         dest: C:\zabbix_agentd.conf
 
     - name: Enable and start a new Zabbix Agent daemon
