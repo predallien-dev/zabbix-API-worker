@@ -6,8 +6,7 @@ ocod_old = ['http://10.87.188.76/zabbix', 'm.gerbersgagen', 'KL29JPMe']
 
 
 class ZabbixWorker:
-    def __init__(self):
-        pass
+
     """Класс, реализующий ряд функций для удобной работы с Zabbix API"""
 
     # Получаем все имена хостов в группе, номер которой передаем функции на вход.
@@ -32,6 +31,13 @@ class ZabbixWorker:
             for i in range(len(host_ids_and_names)):
                 host_list.append(host_ids_and_names[i].get('host'))
             return host_list
+
+
+    # копирует хост с сервера sourse_host_creds на сервер target_host_creds
+    # в файле откуда вызываем функцию должен быть определен массив с хостнеймами
+    # серверов подлежащих копированию, target_grouip обязательный параметр, определяет в какую
+    # группу хостов на целевом сервере скопируется хост
+
 
     def host_copy(self, sourse_host_creds, target_host_creds, host_list, target_groupid):
         for hostname in host_list:
