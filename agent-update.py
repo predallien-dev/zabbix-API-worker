@@ -1,3 +1,5 @@
+# оставлю пока, не пропадать же коду
+
 import fileinput
 import sys
 
