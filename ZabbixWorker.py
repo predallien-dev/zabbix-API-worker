@@ -1,6 +1,6 @@
 from pyzabbix import ZabbixAPI
 
-# Добавляем список с кредами для мониторинга
+# Список с кредами для мониторинга
 ocod_new = ['https://monitoring.dv.local/', 'm.gerbersgagen', 'KmPO6sssqVDk']
 ocod_old = ['http://10.87.188.76/zabbix', 'm.gerbersgagen', 'KL29JPMe']
 
@@ -17,7 +17,7 @@ class ZabbixWorker:
             host_ids_and_names = zapi.host.get(groupids=groupid, output=['host'])
             host_list = []
 
-            # from list of ID's and host, get hostid only
+            # Из списка с host id и именами хостов нас интересуют только host id
             for i in range(len(host_ids_and_names)):
                 host_ids = host_ids_and_names[i].get('hostid')
                 host_list.append(host_ids)
@@ -64,7 +64,10 @@ class ZabbixWorker:
     #  добавляем хосты на указанный сервер, читая два файла,
     #  в одном hostnames, в другом ip
 
-    def add_host(self, host_creds, groupid):
+    # под *args подразумевается тип добавляемого агента.
+    # типа агента по умолчанию - zabbix agent по ip
+    # допустимо использовать типы dns, snmp
+    def add_host(self, host_creds, groupid, method=1):
 
         hostnames = []
         iplist = []
@@ -79,19 +82,34 @@ class ZabbixWorker:
             for line in file.readlines():
                 iplist.append(line.rstrip())
         for i in range(len(hostnames)):
-            with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
-                host_create = zapi.host.create(
-                    host=hostnames[i],
-                    groups=[{'groupid': groupid}],
-                    interfaces=[
-                        {'main':'1', 'type': '1', 'useip': '1', 'dns': '',
-                         'port': '10050', 'bulk': '1',
-                         'ip': iplist[i]}
-                    ]
-                )
+            # обрабатываем тип добавляемого интерфейса 'Agent'
+            if method == 1:
+                with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+                    host_create = zapi.host.create(
+                        host=hostnames[i],
+                        groups=[{'groupid': groupid}],
+                        interfaces=[
+                                {'main':'1', 'type': '1', 'useip': '1', 'dns': '',
+                                 'port': '161', 'bulk': '1',
+                                 'ip': iplist[i]}])
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен')
+
+            # обрабатываем тип добавляемого интерфейса 'SNMP'
+            if method == 2:
+                with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+                    host_create = zapi.host.create(
+                        host=hostnames[i],
+                        groups=[{'groupid': groupid}],
+                        interfaces=[
+                                {'main':'1', 'type': '2', 'useip': '1', 'dns': '',
+                                 'port': '161', 'bulk': '1',
+                                 'details': {'version':'2', 'bulk':'1', 'community':'{$SNMP_COMMUNITY}'},
+                                 'ip': iplist[i]}])
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен')
+
     # считает количество хостов в группе, только и всего.
 
-    def host_count(self, host_creds, groupid):
+    def  host_count(self, host_creds, groupid):
         with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
             host_count = zapi.host.get(groupids=groupid, output=['host']
             )
