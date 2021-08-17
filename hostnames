@@ -1,1 +1,10 @@
-test-snmp-host
+BS UgPort 1
+BS UgPort 2
+BS UgPort 3
+BS UgPort 4
+BS UgPort 5
+BS UgPort 6
+BS UgPort 7
+Gorizont-BS-1
+Gorizont-BS-2
+Gorizont-BS-3

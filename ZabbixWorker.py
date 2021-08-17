@@ -3,6 +3,8 @@ from pyzabbix import ZabbixAPI
 # Список с кредами для мониторинга
 ocod_new = ['https://monitoring.dv.local/', 'm.gerbersgagen', 'KmPO6sssqVDk']
 ocod_old = ['http://10.87.188.76/zabbix', 'm.gerbersgagen', 'KL29JPMe']
+rcod = ['http://monitoring-rcod.dv.local/', 'm.gerbersgagen', 'KmPO6sssqVDk']
+office = ['https://monitoring.avilex.ru/zabbix', 'm.gerbersgagen', 'Masterimargarit5*']
 
 
 class ZabbixWorker:
@@ -64,17 +66,15 @@ class ZabbixWorker:
     #  добавляем хосты на указанный сервер, читая два файла,
     #  в одном hostnames, в другом ip
 
-    # под *args подразумевается тип добавляемого агента.
-    # типа агента по умолчанию - zabbix agent по ip
-    # допустимо использовать типы dns, snmp
-    def add_host(self, host_creds, groupid, method=1):
+
+    def add_host(self, host_creds, groupid, method=1, dns=False):
 
         hostnames = []
         iplist = []
 
         # итерируемся по двум листам, потом используем 1 строчки в качестве хостнейма
         # вторую строчку в качестве ip
-        # скрипт работает только если используется IP, с DNS не работает
+
         with open('hostnames', 'r') as file:
             for line in file.readlines():
                 hostnames.append(line.rstrip())
@@ -82,20 +82,34 @@ class ZabbixWorker:
             for line in file.readlines():
                 iplist.append(line.rstrip())
         for i in range(len(hostnames)):
-            # обрабатываем тип добавляемого интерфейса 'Agent'
-            if method == 1:
+            # Добавляем интерфейс Agent c IP адресом
+
+            if method == 1 and dns == False:
                 with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
                     host_create = zapi.host.create(
                         host=hostnames[i],
                         groups=[{'groupid': groupid}],
                         interfaces=[
-                                {'main':'1', 'type': '1', 'useip': '1', 'dns': '',
-                                 'port': '161', 'bulk': '1',
-                                 'ip': iplist[i]}])
-                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен')
+                             {'main': '1', 'type': '1', 'useip': '1', 'dns': '',
+                             'port': '10050', 'bulk': '1',
+                             'ip': iplist[i]}])
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен (Agent)')
+            # Добавляем интерфейс Agent c DNS адресом
+            elif method == 1 and dns == True:
+                with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+                    host_create = zapi.host.create(
+                        host=hostnames[i],
+                        groups=[{'groupid': groupid}],
+                        interfaces=[
+                                {'main':'1', 'type': '1', 'useip': '0', 'dns': iplist[i],
+                                 'port': '10050',
+                                 'ip': ''}])
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c DNS-адресом ' + iplist[i] + ' успешно добавлен (Agent)')
+
+
 
             # обрабатываем тип добавляемого интерфейса 'SNMP'
-            if method == 2:
+            if method == 2 and dns == False:
                 with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
                     host_create = zapi.host.create(
                         host=hostnames[i],
@@ -105,7 +119,22 @@ class ZabbixWorker:
                                  'port': '161', 'bulk': '1',
                                  'details': {'version':'2', 'bulk':'1', 'community':'{$SNMP_COMMUNITY}'},
                                  'ip': iplist[i]}])
-                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен')
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c ip-адресом ' + iplist[i] + ' успешно добавлен (SNMP)')
+            elif method == 2 and dns == True:
+                with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+                    host_create = zapi.host.create(
+                        host=hostnames[i],
+                        groups=[{'groupid': groupid}],
+                        interfaces=[
+                            {'main': '1', 'type': '2', 'useip': '0', 'dns': iplist[i],
+                             'port': '161', 'bulk': '1',
+                             'details': {'version': '2', 'bulk': '1', 'community': '{$SNMP_COMMUNITY}'},
+                             'ip': ''}])
+                    print('Хост ' + '"' + hostnames[i] + '"' + ' c DNS-адресом ' + iplist[i] + ' успешно добавлен (SNMP)')
+
+
+
+
 
     # считает количество хостов в группе, только и всего.
 
