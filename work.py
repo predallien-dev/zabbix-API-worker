@@ -4,4 +4,5 @@ from ZabbixWorker import *
 
 res = ZabbixWorker()
 
-res.add_host(office, 182, method=1, dns=False)
+
+print(res.add_host(office,248,method=2))

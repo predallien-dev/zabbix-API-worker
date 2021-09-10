@@ -140,8 +140,6 @@ class ZabbixWorker:
 
     def  host_count(self, host_creds, groupid):
         with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
-            host_count = zapi.host.get(groupids=groupid, output=['host']
-            )
+            host_count = zapi.host.get(groupids=groupid, output=['host'])
         res = len([element for element in host_count if isinstance(element, dict)])
         return int(res)
-

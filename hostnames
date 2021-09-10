@@ -1,10 +1,12 @@
-BS UgPort 1
-BS UgPort 2
-BS UgPort 3
-BS UgPort 4
-BS UgPort 5
-BS UgPort 6
-BS UgPort 7
-Gorizont-BS-1
-Gorizont-BS-2
-Gorizont-BS-3
+CoreSW_DMZ.Flagman.SAO
+AccessSW1_DMZ.Flagman.SAO
+AccessSW2_DMZ.Flagman.SAO
+AccessSW3_DMZ.Flagman.SAO
+AccessSW1_MFC.Flagman.SAO
+AccessSW2_MFC.Flagman.SAO
+BorderGW.Flagman.SAO
+BorderSW.Flagman.SAO
+Zastava_VIP.Flagman.SAO
+Zastava_Node-1.Flagman.SAO
+Zastava_Node-2.Flagman.SAO
+Checkpoint.Flagman.SAO
