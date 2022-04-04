@@ -1,0 +1,38 @@
+from ZabbixWorker import *
+
+res = ZabbixWorker()
+pob_old = ['http://pob-zabbix-01.obr.mos.ru/zabbix', 'm.gerbersgagen', 'FeJ0adW5']
+pob_new = ['https://10.89.87.99/', 'Service Accaunt', 'Masterimargarit5*']
+hosts = list()
+'''
+Копируем группы пользователей, без создания самих пользоватей и прав доступа
+'''
+
+# берем все юзергруппы на сервере и добавялем в лист hosts все имена
+def get_users(sourse_host_creds):
+    with ZabbixAPI(url=sourse_host_creds[0], user=sourse_host_creds[1], password=sourse_host_creds[2]) as zapi:
+        get_users = zapi.usergroup.get(output=['name'])
+        for i in get_users:
+            hosts.append(i['name'])
+        return hosts
+
+# вызываем функцию и наполняем лист hosts именами юзергрупп
+get_users(pob_old)
+
+# пользуясь тем, что в листе hosts все имена групп, добавляем такие же группы на новый сервер
+def add_user(sourse_host_creds, hostlist):
+    hostlist = hosts
+    # для добавления
+
+    for each_host in hostlist:
+        try:
+            with ZabbixAPI(url=sourse_host_creds[0], user=sourse_host_creds[1], password=sourse_host_creds[2]) as zapi:
+                print('Добавляем юзера ' + each_host)
+                add_usergroup = zapi.usergroup.create(
+                    name=each_host
+                )
+        except Exception as e:
+            print(e)
+            pass
+
+add_user(pob_new,hosts)
