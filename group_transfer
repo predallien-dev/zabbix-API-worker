@@ -1,0 +1,46 @@
+from ZabbixWorker import *
+
+'''
+Копируем все группы с одного сервера на другой
+'''
+
+#создаем экземпляр класса ZabbixWorker
+res = ZabbixWorker()
+
+
+#креды для коннекта к серверам
+pob_old = ['http://pob-zabbix-01.obr.mos.ru/zabbix', 'm.gerbersgagen', 'FeJ0adW5']
+pob_new = ['https://10.89.87.99/', 'm.gerbersgagen', 'Masterimargarit5*']
+
+# лист для хранения имен групп, чтобы потом сделать такие же имена на новом сервере
+groupname_list = list()
+
+# функция возвращает имена всех хостгрупп на сервере
+def make_group_name_list():
+
+
+    print('Получаем список всех групп на сервере...')
+    # берем все группы на сервере и получаем их ID и имена
+    group_list = res.get_groups(pob_old)
+    # убираем ID и оставляем только имена групп, которые добавляем в groupname_list
+    for i in group_list:
+        groupname_list.append(i['name'])
+    return groupname_list
+
+# делаем хосты на новом сервере с такими же именами групп, как и на старом, добавляя их из листа, полученного
+# в результате работы предыдущей функции
+def group_transfer(host_creds):
+    for group_name in groupname_list:
+        try:
+            with ZabbixAPI(url=host_creds[0], user=host_creds[1], password=host_creds[2]) as zapi:
+
+                    zapi.hostgroup.create(name=group_name)
+                    print('Создаем группу ' + group_name)
+        except Exception as e:
+            print(e)
+            pass
+
+# копируем группы со старого сервера на новый
+make_group_name_list()
+group_transfer(pob_new)
+
