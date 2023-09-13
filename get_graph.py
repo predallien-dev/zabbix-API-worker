@@ -69,4 +69,4 @@ class ZabbixAPIWorker(metaclass=MetaSingleton):
 
 
 res = ZabbixAPIWorker()
-res.get_
+res.get_graph()
