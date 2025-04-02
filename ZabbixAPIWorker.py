@@ -937,7 +937,7 @@ Also, specify the type of interface for the created host. Supported interfaces a
         for group in res.zapi.hostgroup.get():
             group_names.append(group['name'])
         for host in group_names:
-            if "МФЦ/Цент" in host:
+            if "<groupname>" in host:
                 target_group_names.append(host)
         # в листе target_group_names получили список групп, в которых нужно поменять комьюнити
         print('Вычисляем ID нужных групп...')
